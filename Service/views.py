@@ -11,6 +11,7 @@ def index(request):
 def check_health(request):
     return HttpResponse("OK")  # 서버 정상 작동 중
 
+@csrf_exempt
 def articlecomp_action_keyword(request):
     text = request.body.decode('utf-8')
     print(text)
