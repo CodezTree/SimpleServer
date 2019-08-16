@@ -12,6 +12,9 @@ def check_health(request):
     return HttpResponse("OK")  # 서버 정상 작동 중
 
 def articlecomp_action_keyword(request):
+    text = request.body.decode('utf-8')
+    print(text)
+
     return HttpResponse("NO")
 
 @csrf_exempt
@@ -19,5 +22,5 @@ def articlecomp_action_now(request):
     text = request.body.decode('utf-8')
     print(text)
 
-    json_data = json.load(text)
+    json_data = json.loads(text)
     return HttpResponse("OK")
