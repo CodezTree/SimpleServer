@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from newspaper import Article
 import json
 
@@ -13,6 +14,7 @@ def check_health(request):
 def articlecomp_action_keyword(request):
     return HttpResponse("NO")
 
+@csrf_exempt
 def articlecomp_action_now(request):
     text = request.body.decode('utf-8')
     print(text)
