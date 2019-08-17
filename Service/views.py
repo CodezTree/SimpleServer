@@ -13,7 +13,7 @@ import json,  requests
 
 def replaceAll(str_):
     str_ = str_.split('\n')
-    str_ = ''.join(str_)
+    str_ = ' '.join(str_)
     return str_
 
 
@@ -50,18 +50,19 @@ def articlecomp_action_keyword(request):
     url = str('https://news.google.com/search?q=' + keyword + '&hl=ko&gl=KR&ceid=KR%3Ako')
     response = requests.get(url)
     # parse html
-    page = str(BeautifulSoup(response.content))
+    page = str(BeautifulSoup(response.content, features='lxml'))
     URLlist = []
 
-    max_url_size = 5
+    max_url_size = 3
     i = 0
 
     while True:
         url, n = getURL(page)
         page = page[n:]
         if url:
-            if (i == max_url_size):
+            if i == max_url_size:
                 break
+            url = url[1:]
             savingURL = str("https://news.google.com" + url)
             URLlist.append(savingURL)
             i += 1
@@ -93,14 +94,17 @@ def articlecomp_action_keyword(request):
             print("읽을 수 없는 url 형식")
 
     summarized = summarize(article_text, ratio=0.3, split=True)[:3]
+    summarized_ = ' '.join(summarized)
 
     response_data = OrderedDict()
 
     response_data['version'] = json_data['version']
     response_data['resultCode'] = "OK"
-    response_data['output'] = {'summarized': summarized, 'keyword': keyword}
+    response_data['output'] = {'summarized': summarized_, 'keyword': keyword}
 
     response = json.dumps(response_data, ensure_ascii=False, indent='\t')
+
+    print(response)
 
     return HttpResponse(response, content_type='application/json')
 
@@ -112,4 +116,3 @@ def articlecomp_action_now(request):
 
     json_data = json.loads(text)
     return HttpResponse("OK")
-
