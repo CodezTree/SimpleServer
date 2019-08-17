@@ -10,34 +10,32 @@ import json,  requests, regex
 # Custom Functions
 
 
-def replaceAll(str_):
-    str_ = str_.split('\n')
-    str_ = ' '.join(str_)
-    return str_
-
-
-def getURL(page):
-    start_link = page.find("a href")
-    if start_link == -1:
-        return None, 0
-    start_quote = page.find('"', start_link)
-    end_quote = page.find('"', start_quote + 1)
-    url = page[start_quote + 1: end_quote]
-    return url, end_quote
-
-def get_text(URL):
-    html_src = requests.get(URL)
-    soup = BeautifulSoup(html_src.text, 'lxml')
-    text = ''
-    for item in soup.find_all("div", id="articleBodyContents"):
-        text = text + str(item.find_all(text=True))
-        return clean_text(text)
-
-# 결과 정보에 대해 특수문자 제거 등 텍스트를 정리한다.
-def clean_text(text):
-    cleanText = regex.sub("[a-zA-Z]", "", text)
-    cleanText = regex.sub("[\{\}\[\]\/?;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]", "", cleanText)
-    return cleanText
+# def replaceAll(str_):
+#     str_ = str_.split('\n')
+#     str_ = ' '.join(str_)
+#     return str_
+# def getURL(page):
+#     start_link = page.find("a href")
+#     if start_link == -1:
+#         return None, 0
+#     start_quote = page.find('"', start_link)
+#     end_quote = page.find('"', start_quote + 1)
+#     url = page[start_quote + 1: end_quote]
+#     return url, end_quote
+#
+# def get_text(URL):
+#     html_src = requests.get(URL)
+#     soup = BeautifulSoup(html_src.text, 'lxml')
+#     text = ''
+#     for item in soup.find_all("div", id="articleBodyContents"):
+#         text = text + str(item.find_all(text=True))
+#         return clean_text(text)
+#
+# # 결과 정보에 대해 특수문자 제거 등 텍스트를 정리한다.
+# def clean_text(text):
+#     cleanText = regex.sub("[a-zA-Z]", "", text)
+#     cleanText = regex.sub("[\{\}\[\]\/?;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]", "", cleanText)
+#     return cleanText
 
 
 # Create your views here.
