@@ -70,6 +70,11 @@ def articlecomp_action_keyword(request):
     article_text = replaceAll(article_text)
 
     print(article_text)
+
+    summarized = summarize(article_text, ratio=0.3, split=True)[:3]
+    summarized_ = ' '.join(summarized)
+    print(summarized_)
+
     #
     # json_data = json.loads(text)
     # keyword = json_data['action']['parameters']['keyword']['value']
