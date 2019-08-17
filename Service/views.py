@@ -64,7 +64,7 @@ def articlecomp_action_keyword(request):
     resp = requests.get(new_url)
     soup = BeautifulSoup(resp.text, 'lxml')
 
-    items = soup.select('div > article > div > div > a')
+    items = soup.select('div > div > article > a')
 
     titles = []
     links = []
