@@ -46,61 +46,61 @@ def articlecomp_action_keyword(request):
     keyword = json_data['action']['parameters']['keyword']['value']
     summarized = ''
     print('keyword :', keyword)
-
-    url = str('https://news.google.com/search?q=' + keyword + '&hl=ko&gl=KR&ceid=KR%3Ako')
-    response = requests.get(url)
-    # parse html
-    page = str(BeautifulSoup(response.content, features='lxml'))
-    URLlist = []
-
-    max_url_size = 3
-    i = 0
-
-    while True:
-        url, n = getURL(page)
-        page = page[n:]
-        if url:
-            if i == max_url_size:
-                break
-            url = url[1:]
-            savingURL = str("https://news.google.com" + url)
-            URLlist.append(savingURL)
-            i += 1
-        else:
-            break
-
-    article_text = ''
-    for line in URLlist:
-        url = line
-
-        new_url = str(url)
-
-        # new_url = new_url[2:-2]
-        print(new_url)
-
-        a = Article(new_url, language='ko')
-        try:
-            a.download()
-            a.parse()
-
-            article_text = str(a.text)
-
-            article_text = replaceAll(article_text)
-
-            print(article_text)
-
-            break # Successfully Parsed
-        except:
-            print("읽을 수 없는 url 형식")
-
-    summarized = summarize(article_text, ratio=0.3, split=True)[:3]
-    summarized_ = ' '.join(summarized)
+    #
+    # url = str('https://news.google.com/search?q=' + keyword + '&hl=ko&gl=KR&ceid=KR%3Ako')
+    # response = requests.get(url)
+    # # parse html
+    # page = str(BeautifulSoup(response.content, features='lxml'))
+    # URLlist = []
+    #
+    # max_url_size = 3
+    # i = 0
+    #
+    # while True:
+    #     url, n = getURL(page)
+    #     page = page[n:]
+    #     if url:
+    #         if i == max_url_size:
+    #             break
+    #         url = url[1:]
+    #         savingURL = str("https://news.google.com" + url)
+    #         URLlist.append(savingURL)
+    #         i += 1
+    #     else:
+    #         break
+    #
+    # article_text = ''
+    # for line in URLlist:
+    #     url = line
+    #
+    #     new_url = str(url)
+    #
+    #     # new_url = new_url[2:-2]
+    #     print(new_url)
+    #
+    #     a = Article(new_url, language='ko')
+    #     try:
+    #         a.download()
+    #         a.parse()
+    #
+    #         article_text = str(a.text)
+    #
+    #         article_text = replaceAll(article_text)
+    #
+    #         print(article_text)
+    #
+    #         break # Successfully Parsed
+    #     except:
+    #         print("읽을 수 없는 url 형식")
+    #
+    # summarized = summarize(article_text, ratio=0.3, split=True)[:3]
+    # summarized_ = ' '.join(summarized)
 
     response_data = OrderedDict()
 
     response_data['version'] = json_data['version']
     response_data['resultCode'] = "OK"
-    response_data['output'] = {'summarized': summarized_, 'keyword': keyword}
+    response_data['output'] = {'summarized': '이현준은 세계 최강 바보입니다. 정말 멍청하죠. 그리구 친근한 또라이에요.', 'keyword': keyword}
 
     response = json.dumps(response_data, ensure_ascii=False, indent='\t')
 
