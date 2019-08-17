@@ -53,12 +53,18 @@ def articlecomp_action_keyword(request):
     page = str(BeautifulSoup(response.content))
     URLlist = []
 
+    max_url_size = 5
+    i = 0
+
     while True:
         url, n = getURL(page)
         page = page[n:]
         if url:
+            if (i == max_url_size):
+                break
             savingURL = str("https://news.google.com" + url)
             URLlist.append(savingURL)
+            i += 1
         else:
             break
 
@@ -79,6 +85,8 @@ def articlecomp_action_keyword(request):
             article_text = str(a.text)
 
             article_text = replaceAll(article_text)
+
+            print(article_text)
 
             break # Successfully Parsed
         except:
@@ -104,3 +112,4 @@ def articlecomp_action_now(request):
 
     json_data = json.loads(text)
     return HttpResponse("OK")
+
