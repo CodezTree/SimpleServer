@@ -55,12 +55,26 @@ def check_health(request):
 def articlecomp_action_keyword(request):
     text = request.body.decode('utf-8')
 
-    new_url = 'http://news.chosun.com/site/data/html_dir/2019/08/17/2019081700818.html'
+    keyword = '이현준'
+
+    new_url = str('https://news.google.com/search?q=' + keyword +'&hl=ko&gl=KR&ceid=KR%3Ako')
 
     # new_url = new_url[2:-2]
     print(new_url)
+    resp = requests.get(new_url)
+    soup = BeautifulSoup(resp.text, 'lxml')
 
-    a = Article(new_url, language='ko')
+    items = soup.select('div > article > div > div > a')
+
+    titles = []
+    links = []
+    for item in items:
+        title = item.text
+        link = 'https://news.google.com' + item.get('href')[1:]
+        titles.append(title)
+        links.append(link)
+
+    a = Article(links[0], language='ko')
 
     a.download()
     a.parse()
@@ -74,6 +88,8 @@ def articlecomp_action_keyword(request):
     summarized = summarize(article_text, ratio=0.3, split=True)[:3]
     summarized_ = ' '.join(summarized)
     print(summarized_)
+
+    response = summarized_
 
     #
     # json_data = json.loads(text)
