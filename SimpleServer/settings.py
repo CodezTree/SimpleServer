@@ -33,6 +33,7 @@ APPEND_SLASH = False
 # Application definition
 
 INSTALLED_APPS = [
+    'Service.apps.ServiceConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
