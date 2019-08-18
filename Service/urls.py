@@ -27,4 +27,5 @@ urlpatterns = [
     path('articlecomp.action.now.reject/', views.url_reject, name="url_done"),
     path('articlecomp.action.now.confirm', views.url_confirm, name="url_confirm"),
     path('articlecomp.action.now.confirm/', views.url_confirm, name="url_confirm"),
+    path('note', views.note, name="note")
 ]

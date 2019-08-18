@@ -347,3 +347,7 @@ def url_confirm(request):
 
     response = json.dumps(response_data, ensure_ascii=False, indent='\t')
     return HttpResponse(response, content_type='application/json')
+
+
+def note(request):
+    return render(request, 'save.html')
