@@ -133,13 +133,13 @@ def register_app_check(request):
     return HttpResponse("POSTFAILED")
 
 
-
 @csrf_exempt
 def articlecomp_action_keyword(request):
     text = request.body.decode('utf-8')
 
     json_data = json.loads(text)
     keyword = json_data['action']['parameters']['keyword']['value']
+    user_token = json_data["context"]["session"]["accessToken"]
     summarized = ''
     print('keyword :', keyword)
 
@@ -160,6 +160,12 @@ def articlecomp_action_keyword(request):
         titles.append(title)
         links.append(link)
 
+    temp_js = []
+    for i in range(len(titles)):
+        temp_js.append({"summarized": titles[i], "link": links[i]})
+
+    temp_js = temp_js[1:]
+
     a = Article(links[0], language='ko')
 
     a.download()
@@ -173,7 +179,12 @@ def articlecomp_action_keyword(request):
 
     summarized = summarize(article_text, ratio=0.3, split=True)[:3]
     summarized_ = ' '.join(summarized)
+    temp_js.insert(0, {"summarized": summarized_, "link":links[0]})
     print(summarized_)
+
+    u = User.objects.get(user_token=user_token)
+    u.user_sum_temp = json.dumps(temp_js)
+    u.save()
 
     response_data = OrderedDict()
 
@@ -211,6 +222,51 @@ def articlecomp_action_keyword_send_app(request):
 
     json_data = json.loads(text)
     keyword = json_data['action']['parameters']['keyword']['value']
+    user_token = json_data["context"]["session"]["accessToken"]
+
+    u = User.objects.get(user_token=user_token)
+    json_string = u.user_sum_temp
+    firebase_token = u.firebase_token
+    u.user_sum_temp = ""
+    u.save() # dump
+
+    url = "https://fcm.googleapis.com/fcm/send"
+    headers = {'Content-Type': 'application/json; UTF-8',
+               'Authorization': 'key=AAAAGDcH1Ds:APA91bEtAp_DCsG9seg46HITANxNuREbOntSYz3YZ0YeniNscdJrlF9KwnX2rsHf-AKJDqCUq9u_TG9zpKg-rhZdT1-_6nVW-l5ym9f-kRo0UguO5fssvTSnqPK0C69gn5McyrZSM96F'}
+    body = '''{
+                    "to":"''' + firebase_token + '''"
+                    "notification": {
+                        "title": "세줄요약",
+                        "body": "요약 결과가 전송되었습니다."
+                    },
+                    "data": {
+                        "data_list": '''+json_string+'''
+                    }
+                  }'''
+
+    requests.post(url=url, headers=headers, data=body.encode('utf-8'))
+
+    response_data = OrderedDict()
+
+    response_data['version'] = json_data['version']
+    response_data['resultCode'] = "OK"
+    response_data['output'] = {'summarized': '', 'keyword': keyword}
+
+    response = json.dumps(response_data, ensure_ascii=False, indent='\t')
+    return HttpResponse(response, content_type='application/json')
+
+
+@csrf_exempt
+def articlecomp_action_keyword_reject(request):
+    text = request.body.decode('utf-8')
+
+    json_data = json.loads(text)
+    keyword = json_data['action']['parameters']['keyword']['value']
+    user_token = json_data["context"]["session"]["accessToken"]
+
+    u = User.objects.get(user_token=user_token)
+    u.user_sum_temp = ""
+    u.save() # Flush
 
     response_data = OrderedDict()
 
